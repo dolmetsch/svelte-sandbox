@@ -1,0 +1,3 @@
+[submodule "src/langpacks/hebrew"]
+	path = src/langpacks/hebrew
+	url = git@github.com:dolmetsch/langpacks-hebrew.git
