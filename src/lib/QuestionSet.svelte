@@ -11,6 +11,8 @@ let currentQuestionIndex = 0
 $: question = questions[currentQuestionIndex]
 
 let isAnsweredCorrectly
+let answerGiven = false
+const wrongAnswers = []
 
 let answeredTotal = 0
 let answeredCorrectly = 0
@@ -20,22 +22,35 @@ $: percentage = answeredTotal ?
 
 const handleChosen = event => {
 	isAnsweredCorrectly = question.correctAnswerIndex === event.detail.index
-	answeredTotal++
-	if (isAnsweredCorrectly) {
-		answeredCorrectly++
+	if (!answerGiven) {
+		answeredTotal++
+		if (isAnsweredCorrectly) {
+			answeredCorrectly++
+			setTimeout(moveToNextQuestion, delay)
+		} else {
+			wrongAnswers.push(question)
+		}
+		answerGiven = true
+	} else {
+		if (isAnsweredCorrectly) {
+			setTimeout(moveToNextQuestion, delay)
+		}
 	}
-	setTimeout(moveToNextQuestion, delay)
 }
 
 const moveToNextQuestion = () => {
 	isAnsweredCorrectly = undefined
 	currentQuestionIndex++
+	answerGiven = false
 }
 
 $: {
 	if (currentQuestionIndex > -1 && !question) {
 		dispatch('finished', {
-			percentage
+			percentage,
+			wrongAnswers,
+			total: answeredTotal,
+			correct: answeredCorrectly,
 		})
 	}
 }

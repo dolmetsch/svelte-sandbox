@@ -16,7 +16,7 @@ const shuffle = array => {
 
 const originals = shuffle(Object.keys(words))
 const translations = shuffle(Object.values(words))
-const guessed = {}
+let guessed = {}
 
 let originalSelected, translationSelected
 
@@ -28,22 +28,31 @@ $: {
 		if (words[originalSelected] === translationSelected) {
 			guessed[originalSelected] = true
 			guessed[translationSelected] = true
+			if (!audioAvailability[originalSelected]) {
+				setTimeout(hideAnswered, 1000)
+			}
 		}
-		setTimeout(() => {
-			originalSelected = translationSelected = undefined
-			animationInProgress = false
-		}, 1000)
 	}
+}
+
+const hideAnswered = () => {
+	originalSelected = translationSelected = undefined
+	animationInProgress = false
 }
 </script>
 
 <template>
 {#if allDone}
 	All Done!
+	<span on:click={() => guessed = {}}>Restart?</span>
 {:else}
 	<div class="exercise">
-		{#if originalSelected}
-			<audio src={`/audio/${originalSelected}.mp3`} autoplay></audio>
+		{#if originalSelected && translationSelected}
+			<audio
+				src={`/audio/${originalSelected}.mp3`}
+				autoplay
+				on:ended={hideAnswered}
+			></audio>
 		{/if}
 		<div class="column originals">
 		{#each originals as o}

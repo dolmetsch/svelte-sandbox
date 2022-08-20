@@ -15,7 +15,7 @@ const shuffle = array => {
 
 let started = false
 let finished = false
-let percentage
+let percentage, correct, total
 const delay = 200
 
 const ws = Object.keys(words)
@@ -33,7 +33,7 @@ const addWrongOptions = (options, original) => {
 	}
 }
 
-const questions = shuffle(ws).map(
+const allQuestions = shuffle(ws).map(
 	original => {
 		const translation = words[original]
 		const options = [translation]
@@ -49,9 +49,25 @@ const questions = shuffle(ws).map(
 	},
 )
 
+let questions = allQuestions
+let wrongAnswers
+
 const handleFinished = (event) => {
 	finished = true
+	total = event.detail.total
+	correct = event.detail.correct
 	percentage = event.detail.percentage
+	wrongAnswers = event.detail.wrongAnswers
+}
+
+const goForWrongAnswers = () => {
+	questions = wrongAnswers
+	finished = false
+}
+
+const reset = () => {
+	questions = shuffle(allQuestions)
+	finished = false
 }
 </script>
 
@@ -60,8 +76,19 @@ const handleFinished = (event) => {
 	{#if !finished}
 		<QuestionSet delay={delay} questions={questions} on:finished={handleFinished}/>
 	{:else}
-		All Done! {percentage}
-		<span on:click={() => finished = false}>Restart?</span>
+		All Done! {correct}/{total} {percentage}
+		<span on:click={reset}>Restart?</span>
+		<br/>
+		
+		{#if wrongAnswers.length}
+			<h4>Wrong Answers:</h4>
+			<span on:click={goForWrongAnswers}>Repeat with these words</span>
+			<ul>
+			{#each wrongAnswers as a}
+				<li>{a.text} - {a.options[a.correctAnswerIndex]}</li>
+			{/each}
+			</ul>
+		{/if}
 	{/if}
 {:else}
 	<span on:click={() => started = true}>click to start</span>
