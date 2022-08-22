@@ -23,8 +23,8 @@ const missingAudio = Object.keys(words).filter(w => !audioAvailability[w])
 		{w}<br>
 	{/each} -->
 
-	<!-- <WordQuestionSet words={words}/> -->
-	<WordPairingExercise words={words}/>
+	<WordQuestionSet words={words}/>
+	<!-- <WordPairingExercise words={words}/> -->
 	<!-- <AntonymsExercise words={words} pairs={pairs}/> -->
 </main>
 

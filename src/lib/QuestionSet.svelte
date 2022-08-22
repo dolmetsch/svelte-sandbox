@@ -54,7 +54,15 @@ $: {
 		})
 	}
 }
+
+const onKeyDown = e => {
+	if (e.key === 'f') {
+		wrongAnswers.push(question)
+	}
+}
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <main>
 	
@@ -65,6 +73,7 @@ $: {
 		on:chosen={handleChosen}
 		isAnsweredCorrectly={isAnsweredCorrectly}
 	/>
+
 	<!-- {:else}
 		All done! -->
 	{/if}

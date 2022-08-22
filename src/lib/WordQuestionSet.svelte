@@ -23,12 +23,17 @@ const ws = Object.keys(words)
 const addWrongOptions = (options, original) => {
 	let added = 0
 	const toAdd = 3
+	let attempts = 0
 	while (added < toAdd) {
 		const randI = Math.floor(Math.random() * ws.length)
 		const w = words[ws[randI]]
 		if (!options.includes(w)) {
 			options.push(w)
 			added++
+		}
+		attempts++
+		if (attempts >= ws.length + toAdd) {
+			break
 		}
 	}
 }
@@ -50,7 +55,7 @@ const allQuestions = shuffle(ws).map(
 )
 
 let questions = allQuestions
-let wrongAnswers
+let wrongAnswers = []
 
 const handleFinished = (event) => {
 	finished = true
@@ -68,6 +73,30 @@ const goForWrongAnswers = () => {
 const reset = () => {
 	questions = shuffle(allQuestions)
 	finished = false
+}
+
+$: wrongAnswersAsDict = wrongAnswers.reduce(
+	(acc, q) => {
+		acc[q.text] = q.options[q.correctAnswerIndex]
+		return acc
+	},
+	{}
+)
+
+const onKeyDown = e => {
+	if (!started) {
+		started = true
+	}
+	if (finished) {
+		switch (e.key) {
+			case 'r':
+				reset()
+				break
+			case 'f':
+				goForWrongAnswers()
+				break
+		}
+	}
 }
 </script>
 
@@ -88,12 +117,15 @@ const reset = () => {
 				<li>{a.text} - {a.options[a.correctAnswerIndex]}</li>
 			{/each}
 			</ul>
+			{JSON.stringify(wrongAnswersAsDict)}
 		{/if}
 	{/if}
 {:else}
-	<span on:click={() => started = true}>click to start</span>
+	<span>click anywhere or press any key to start</span>
 {/if}
 </template>
+
+<svelte:window on:click={() => started = true} on:keydown={onKeyDown} />
 
 <style>
 </style>
