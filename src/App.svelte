@@ -2,6 +2,7 @@
 import WordQuestionSet from './lib/WordQuestionSet.svelte'
 import WordPairingExercise from './lib/WordPairingExercise.svelte'
 import AntonymsExercise from './lib/AntonymsExercise.svelte'
+import audioAvailability from './assets/audio-availability.json'
 import words from './assets/words.js'
 
 const pair = (acc, value, index) => {
@@ -13,9 +14,15 @@ const pair = (acc, value, index) => {
 	return acc
 }
 const pairs = Object.keys(words).reduce(pair, [])
+
+const missingAudio = Object.keys(words).filter(w => !audioAvailability[w])
 </script>
 
 <main>
+	<!-- {#each missingAudio as w }
+		{w}<br>
+	{/each} -->
+
 	<!-- <WordQuestionSet words={words}/> -->
 	<WordPairingExercise words={words}/>
 	<!-- <AntonymsExercise words={words} pairs={pairs}/> -->
